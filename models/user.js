@@ -17,9 +17,9 @@ let userschema= new mongoose.Schema({
     usertype:{
         type:String
     },
-    trackerType: {
+trackerType: {
   type: String,
-  enum: ["pregnancy", "period", null],
+  enum: ["pregnancy", "period"],
   default: null
 },
 resetToken: {

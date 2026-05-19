@@ -3,14 +3,15 @@ import Product from "../models/product.js";
 // CREATE PRODUCT
 export const createProduct = async (req, res) => {
   try {
-    const { name, description, price, category } = req.body;
-
+const { name, description, price, category, stock } = req.body;
     const newProduct = new Product({
       name,
       description,
       price,
       category,   // ✅ important
-      image: req.file.path,
+image: req.file?.path,
+        stock: stock || 0, // default to 0 if not provided
+
     });
 
     await newProduct.save();
@@ -76,5 +77,15 @@ export const deleteProduct = async (req, res) => {
     res.status(200).json({ message: "Product deleted" });
   } catch (error) {
     res.status(500).json({ message: "Error deleting product" });
+  }
+};
+// GET ALL PRODUCTS FOR DASHBOARD (name + stock)
+export const getAllProducts = async (req, res) => {
+  try {
+    const products = await Product.find({}, "name stock"); // only name & stock
+    res.status(200).json(products);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching products" });
   }
 };

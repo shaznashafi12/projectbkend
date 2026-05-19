@@ -3,6 +3,7 @@ import upload from "../config/multer.js";
 import {
   createProduct,
   deleteProduct,
+  getAllProducts,
   getProductById,
   getProducts,
   updateProduct
@@ -16,5 +17,6 @@ productrouter.get("/", getProducts);
 productrouter.get("/:id", getProductById);
 productrouter.put("/:id", updateProduct);
 productrouter.delete("/:id", deleteProduct);
+productrouter.get("/all", getAllProducts); // new endpoint for admin dashboard
 
 export default productrouter;

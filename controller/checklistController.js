@@ -1,68 +1,46 @@
 import Checklist from "../models/checklist.js";
 
 
-// Save or Update Checklist
 export const saveChecklist = async (req, res) => {
   try {
-    const {
-      userId,
-      motherItems,
-      babyItems,
-      newbornCare,
-      documents,
-      supportPerson,
-      cSectionIncluded
-    } = req.body;
+
+    const { userId, ...fields } = req.body;
 
     if (!userId) {
       return res.status(400).json({
         success: false,
-        message: "User ID is required"
+        message: "UserId required"
       });
     }
 
-    let checklist = await Checklist.findOne({ userId });
-
-    if (checklist) {
-      checklist.motherItems = motherItems;
-      checklist.babyItems = babyItems;
-      checklist.newbornCare = newbornCare;
-      checklist.documents = documents;
-      checklist.supportPerson = supportPerson;
-      checklist.cSectionIncluded = cSectionIncluded;
-
-      await checklist.save();
-    } else {
-      checklist = await Checklist.create({
-        userId,
-        motherItems,
-        babyItems,
-        newbornCare,
-        documents,
-        supportPerson,
-        cSectionIncluded
-      });
-    }
+    const checklist = await Checklist.findOneAndUpdate(
+      { userId },          // find by user
+      { $set: fields },    // update fields sent from frontend
+      {
+        new: true,         // return updated document
+        upsert: true       // create if not exists
+      }
+    );
 
     res.status(200).json({
       success: true,
-      data: checklist
+      data: [checklist]   // keep array because your frontend expects it
     });
 
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-// ✅ Get checklist for single user
 export const getChecklist = async (req, res) => {
   try {
+
     const { userId } = req.params;
 
-    const checklists = await Checklist.find({ userId });
+    const checklist = await Checklist.findOne({ userId });
 
     res.status(200).json({
       success: true,
-      data: checklists
+      data: checklist ? [checklist] : []
     });
 
   } catch (error) {
@@ -71,9 +49,9 @@ export const getChecklist = async (req, res) => {
 };
 
 
-// ✅ Get ALL checklists for admin
 export const getAllChecklists = async (req, res) => {
   try {
+
     const checklists = await Checklist.find()
       .populate("userId", "name email")
       .sort({ createdAt: -1 });

@@ -1,10 +1,11 @@
 import express from "express";
 import upload from "../config/multer.js";
 import { getAllReports, uploadReport } from "../controller/uploadcontroller.js";
+import { authMiddleware } from "../middleware/auth.js";
 
-const router = express.Router();
+const reportrouter = express.Router();
 
-router.post("/upload", upload.single("file"), uploadReport);
-router.get("/all", getAllReports);
+reportrouter.post("/upload", authMiddleware, upload.single("file"), uploadReport);
+reportrouter.get("/all", authMiddleware, getAllReports);
 
-export default router;
+export default reportrouter;

@@ -2,6 +2,11 @@ import mongoose from "mongoose";
 
 const trackerschema = new mongoose.Schema(
   {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     mood: {
       type: String,
       required: true,
@@ -11,7 +16,7 @@ const trackerschema = new mongoose.Schema(
       required: true,
     },
     symptoms: {
-      type: [String],   // ← array
+      type: [String],
       default: [],
     },
     journal: {
@@ -19,8 +24,9 @@ const trackerschema = new mongoose.Schema(
       default: "",
     },
   },
-  { timestamps: true }  // ← important for createdAt
+  { timestamps: true }
 );
 
 const Track = mongoose.model("Track", trackerschema);
+
 export default Track;

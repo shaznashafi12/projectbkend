@@ -12,6 +12,7 @@ import periodsrouter from "./routes/periodsrouter.js";
 import { fileURLToPath } from "url";
 import path from "path";
 import checklistRouter from "./routes/checklistRoute.js";
+import waterRouter from "./routes/waterRoutes.js";
 
 dotenv.config();
 
@@ -36,7 +37,7 @@ app.use("/checklist", checklistRouter);
 app.use("/api/orders", orderrouter);
 app.use("/api/products", productrouter);
 app.use("/cycle", periodsrouter);
-
+app.use("/api/water", waterRouter);
 connectDB().then(() => console.log("MongoDB connected"));
 
 app.listen(PORT, () => {

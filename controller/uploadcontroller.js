@@ -1,5 +1,6 @@
 import Report from "../models/upload.js";
 
+// Upload Report
 export const uploadReport = async (req, res) => {
   try {
     if (!req.file) {
@@ -9,14 +10,7 @@ export const uploadReport = async (req, res) => {
       });
     }
 
-    const { name, userId } = req.body; // get userId from frontend
-
-    if (!userId) {
-      return res.status(400).json({
-        success: false,
-        message: "User ID is required"
-      });
-    }
+    const { name, userId } = req.body;
 
     const newReport = await Report.create({
       name,
@@ -24,7 +18,7 @@ export const uploadReport = async (req, res) => {
       date: new Date().toLocaleDateString(),
       type: "Medical Report",
       status: "Normal",
-      user: userId   // save reference
+      userId: userId   // ✅ save userId correctly
     });
 
     res.status(201).json({
@@ -34,28 +28,30 @@ export const uploadReport = async (req, res) => {
     });
 
   } catch (error) {
+    console.error(error);
     res.status(500).json({
       success: false,
-      message: error.message
+      message: "Upload failed"
     });
   }
 };
-// 📥 Get All Reports
+
+
+// Get reports for logged-in user
 export const getAllReports = async (req, res) => {
   try {
-    const reports = await Report.find()
-      .populate("user", "name email usertype")
-      .sort({ createdAt: -1 });
+    const reports = await Report.find({
+      userId: req.user._id
+    });
 
-    res.status(200).json({
+    res.json({
       success: true,
       data: reports
     });
 
   } catch (error) {
     res.status(500).json({
-      success: false,
-      message: error.message
+      message: "Failed to fetch reports"
     });
   }
 };

@@ -64,17 +64,15 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: "Invalid password" });
     }
 
-    const token = jwt.sign(
-      {
-        userId: user._id,
-        email: user.email,
-        usertype: user.usertype,
-      },
-      "abc",
-      { expiresIn: "1h" }
-    );
-
-    // ✅ SEND USER OBJECT PROPERLY
+const token = jwt.sign(
+  {
+    userId: user._id,
+    email: user.email,
+    usertype: user.usertype,
+  },
+  process.env.JWT_SECRET,
+  { expiresIn: "1h" }
+);    // ✅ SEND USER OBJECT PROPERLY
     return res.status(200).json({
       token,
       user: {
@@ -283,5 +281,29 @@ export const getUserById = async (req, res) => {
     res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
+  }
+};
+export const updateProfile = async (req, res) => {
+  try {
+
+    const { id } = req.params;
+    const { name } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { name },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      user: updatedUser
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
